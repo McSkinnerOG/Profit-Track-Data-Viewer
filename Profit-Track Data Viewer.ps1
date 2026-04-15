@@ -351,7 +351,7 @@ function Get-ColumnWidths {
 # ---------------- EVENTS ----------------
 $btnBrowse.Add_Click({
     $dlg = New-Object System.Windows.Forms.OpenFileDialog
-    $dlg.Filter = "Tab separated text (*.txt;*.tsv)|*.txt;*.tsv|All files (*.*)|*.*"
+    $dlg.Filter = "Tab separated text (*.dat;*.txt;*.tsv)|*.dat;*.txt;*.tsv|All files (*.*)|*.*"
 
     if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         $inputBox.Text = $dlg.FileName
