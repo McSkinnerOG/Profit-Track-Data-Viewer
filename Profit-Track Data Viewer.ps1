@@ -18,8 +18,8 @@ $form.Controls.Add($topPanel)
 # ---------------- FILE INPUT ROW ----------------
 $inputBox = New-Object System.Windows.Forms.TextBox
 $inputBox.Location = New-Object System.Drawing.Point(0,0)
-$inputBox.Size = New-Object System.Drawing.Size(760,25)
-$inputBox.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$inputBox.Size = New-Object System.Drawing.Size(845,25)
+$inputBox.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
 $topPanel.Controls.Add($inputBox)
 
 $btnBrowse = New-Object System.Windows.Forms.Button
@@ -34,6 +34,7 @@ $btnProcess.Text = "Process"
 $btnProcess.Size = New-Object System.Drawing.Size(80,27)
 $btnProcess.Location = New-Object System.Drawing.Point(870,0)
 $btnProcess.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
+$btnProcess.Visible = $false
 $topPanel.Controls.Add($btnProcess)
 
 # ---------------- SEARCH ROW ----------------
@@ -67,7 +68,7 @@ $chkExportFiltered = New-Object System.Windows.Forms.CheckBox
 $chkExportFiltered.Text = "Export filtered rows only"
 $chkExportFiltered.AutoSize = $true
 $chkExportFiltered.Location = New-Object System.Drawing.Point(690,39)
-$chkExportFiltered.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
+$chkExportFiltered.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
 $chkExportFiltered.Enabled = $false
 $topPanel.Controls.Add($chkExportFiltered)
 
@@ -180,6 +181,7 @@ $form.Add_DragEnter({
 $form.Add_DragDrop({
     $file = $_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)[0]
     $inputBox.Text = $file
+    Start-ParseIfValid $file
 })
 
 # ---------------- STORAGE ----------------
@@ -193,6 +195,41 @@ $script:highlightColumns = @()
 $script:suspendFilterEvents = $false
 
 # ---------------- HELPERS ----------------
+function Update-TopPanelLayout {
+    $padding = 0
+    $gap = 10
+
+    $browseWidth = $btnBrowse.Width
+    $rightEdgeRow1 = $topPanel.ClientSize.Width - $padding
+    $btnBrowse.Location = New-Object System.Drawing.Point(($rightEdgeRow1 - $browseWidth), 0)
+
+    $inputWidth = [Math]::Max(250, $btnBrowse.Left - $gap - $padding)
+    $inputBox.Location = New-Object System.Drawing.Point($padding, 0)
+    $inputBox.Size = New-Object System.Drawing.Size($inputWidth, 25)
+
+    $labelX = 0
+    $searchTop = 36
+    $lblSearch.Location = New-Object System.Drawing.Point($labelX, 40)
+
+    $searchX = 55
+    $fieldPickerWidth = $btnFieldPicker.Width
+    $clearWidth = $btnClearFilter.Width
+    $checkboxWidth = $chkExportFiltered.PreferredSize.Width
+
+    $checkboxX = $topPanel.ClientSize.Width - $checkboxWidth
+    $clearX = $checkboxX - $gap - $clearWidth
+    $fieldPickerX = $clearX - $gap - $fieldPickerWidth
+    $searchWidth = [Math]::Max(160, $fieldPickerX - $gap - $searchX)
+
+    $txtSearch.Location = New-Object System.Drawing.Point($searchX, $searchTop)
+    $txtSearch.Size = New-Object System.Drawing.Size($searchWidth, 25)
+
+    $btnFieldPicker.Location = New-Object System.Drawing.Point($fieldPickerX, 35)
+    $btnClearFilter.Location = New-Object System.Drawing.Point($clearX, 35)
+    $chkExportFiltered.Location = New-Object System.Drawing.Point($checkboxX, 39)
+}
+Update-TopPanelLayout
+
 function Set-Status {
     param(
         [string]$Text,
@@ -303,6 +340,22 @@ function Normalize-Row {
     return $Values
 }
 
+function Start-ParseIfValid {
+    param([string]$FilePath)
+
+    if ([string]::IsNullOrWhiteSpace($FilePath)) {
+        return
+    }
+
+    if (Test-Path -LiteralPath $FilePath) {
+        Parse-File $FilePath
+    }
+    else {
+        [System.Windows.Forms.MessageBox]::Show("Please choose a valid file first.", "Missing file", "OK", "Warning")
+    }
+}
+
+
 function Escape-RowFilterValue {
     param([string]$Value)
 
@@ -335,8 +388,14 @@ function Initialize-FilterColumns {
     try {
         $clbFilterFields.Items.Clear()
 
+        $columnNames = New-Object System.Collections.Generic.List[string]
         foreach ($column in $script:dataTable.Columns) {
-            [void]$clbFilterFields.Items.Add($column.ColumnName, $true)
+            [void]$columnNames.Add([string]$column.ColumnName)
+        }
+
+        $sortedColumnNames = $columnNames | Sort-Object
+        foreach ($columnName in $sortedColumnNames) {
+            [void]$clbFilterFields.Items.Add($columnName, $true)
         }
 
         Update-FilterButtonText
@@ -403,6 +462,9 @@ function Update-FilterPanelPosition {
     $filterPanel.Location = New-Object System.Drawing.Point($x, $y)
     $filterPanel.BringToFront()
 }
+
+
+
 
 function Reset-FilterUiState {
     $script:searchDelayTimer.Stop()
@@ -643,15 +705,20 @@ $btnBrowse.Add_Click({
 
     if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         $inputBox.Text = $dlg.FileName
+        Start-ParseIfValid $dlg.FileName
     }
 })
 
 $btnProcess.Add_Click({
-    if (Test-Path -LiteralPath $inputBox.Text) {
-        Parse-File $inputBox.Text
-    }
-    else {
-        [System.Windows.Forms.MessageBox]::Show("Please choose a valid file first.", "Missing file", "OK", "Warning")
+    Start-ParseIfValid $inputBox.Text
+})
+
+$inputBox.Add_KeyDown({
+    param($sender, $e)
+
+    if ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
+        $e.SuppressKeyPress = $true
+        Start-ParseIfValid $inputBox.Text
     }
 })
 
@@ -738,6 +805,14 @@ $txtSearch.Add_TextChanged({
 })
 
 $form.Add_Resize({
+    Update-TopPanelLayout
+    if ($filterPanel.Visible) {
+        Update-FilterPanelPosition
+    }
+})
+
+$topPanel.Add_Resize({
+    Update-TopPanelLayout
     if ($filterPanel.Visible) {
         Update-FilterPanelPosition
     }
