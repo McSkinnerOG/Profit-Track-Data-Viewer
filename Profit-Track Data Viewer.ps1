@@ -9,68 +9,108 @@ $form.MinimumSize = New-Object System.Drawing.Size(900,600)
 $form.StartPosition = "CenterScreen"
 
 # ---------------- TOP PANEL ----------------
-$topPanel = New-Object System.Windows.Forms.Panel
+$topPanel = New-Object System.Windows.Forms.TableLayoutPanel
 $topPanel.Location = New-Object System.Drawing.Point(20,15)
 $topPanel.Size = New-Object System.Drawing.Size(1040,95)
 $topPanel.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$topPanel.ColumnCount = 1
+$topPanel.RowCount = 2
+$topPanel.Margin = [System.Windows.Forms.Padding]::new(0)
+$topPanel.Padding = [System.Windows.Forms.Padding]::new(0)
+$topPanel.AutoSize = $false
+$topPanel.GrowStyle = [System.Windows.Forms.TableLayoutPanelGrowStyle]::FixedSize
+[void]$topPanel.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Absolute, 32)))
+[void]$topPanel.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Absolute, 32)))
 $form.Controls.Add($topPanel)
 
 # ---------------- FILE INPUT ROW ----------------
+$fileRow = New-Object System.Windows.Forms.TableLayoutPanel
+$fileRow.Dock = [System.Windows.Forms.DockStyle]::Fill
+$fileRow.ColumnCount = 4
+$fileRow.RowCount = 1
+$fileRow.Margin = [System.Windows.Forms.Padding]::new(0,0,0,6)
+$fileRow.Padding = [System.Windows.Forms.Padding]::new(0)
+$fileRow.GrowStyle = [System.Windows.Forms.TableLayoutPanelGrowStyle]::FixedSize
+[void]$fileRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 90)))
+[void]$fileRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 100)))
+[void]$fileRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 110)))
+[void]$fileRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 1)))
+$topPanel.Controls.Add($fileRow, 0, 0)
+
+$lblFile = New-Object System.Windows.Forms.Label
+$lblFile.Text = "File:"
+$lblFile.AutoSize = $true
+$lblFile.Dock = [System.Windows.Forms.DockStyle]::Fill
+$lblFile.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
+$lblFile.Margin = [System.Windows.Forms.Padding]::new(0,0,10,0)
+$fileRow.Controls.Add($lblFile, 0, 0)
+
 $inputBox = New-Object System.Windows.Forms.TextBox
-$inputBox.Location = New-Object System.Drawing.Point(0,0)
-$inputBox.Size = New-Object System.Drawing.Size(845,25)
-$inputBox.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
-$topPanel.Controls.Add($inputBox)
+$inputBox.Dock = [System.Windows.Forms.DockStyle]::Fill
+$inputBox.Margin = [System.Windows.Forms.Padding]::new(0,2,10,0)
+$fileRow.Controls.Add($inputBox, 1, 0)
 
 $btnBrowse = New-Object System.Windows.Forms.Button
-$btnBrowse.Text = "Browse"
-$btnBrowse.Size = New-Object System.Drawing.Size(80,27)
-$btnBrowse.Location = New-Object System.Drawing.Point(780,0)
-$btnBrowse.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
-$topPanel.Controls.Add($btnBrowse)
+$btnBrowse.Text = "Browse..."
+$btnBrowse.Dock = [System.Windows.Forms.DockStyle]::Fill
+$btnBrowse.Margin = [System.Windows.Forms.Padding]::new(0)
+$fileRow.Controls.Add($btnBrowse, 2, 0)
 
 $btnProcess = New-Object System.Windows.Forms.Button
 $btnProcess.Text = "Process"
-$btnProcess.Size = New-Object System.Drawing.Size(80,27)
-$btnProcess.Location = New-Object System.Drawing.Point(870,0)
-$btnProcess.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
+$btnProcess.Dock = [System.Windows.Forms.DockStyle]::Fill
+$btnProcess.Margin = [System.Windows.Forms.Padding]::new(0)
 $btnProcess.Visible = $false
-$topPanel.Controls.Add($btnProcess)
+$fileRow.Controls.Add($btnProcess, 3, 0)
 
 # ---------------- SEARCH ROW ----------------
+$searchRow = New-Object System.Windows.Forms.TableLayoutPanel
+$searchRow.Dock = [System.Windows.Forms.DockStyle]::Fill
+$searchRow.ColumnCount = 5
+$searchRow.RowCount = 1
+$searchRow.Margin = [System.Windows.Forms.Padding]::new(0)
+$searchRow.Padding = [System.Windows.Forms.Padding]::new(0)
+$searchRow.GrowStyle = [System.Windows.Forms.TableLayoutPanelGrowStyle]::FixedSize
+[void]$searchRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 90)))
+[void]$searchRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 100)))
+[void]$searchRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 170)))
+[void]$searchRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 115)))
+[void]$searchRow.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 210)))
+$topPanel.Controls.Add($searchRow, 0, 1)
+
 $lblSearch = New-Object System.Windows.Forms.Label
 $lblSearch.Text = "Search:"
 $lblSearch.AutoSize = $true
-$lblSearch.Location = New-Object System.Drawing.Point(0,40)
-$topPanel.Controls.Add($lblSearch)
+$lblSearch.Dock = [System.Windows.Forms.DockStyle]::Fill
+$lblSearch.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
+$lblSearch.Margin = [System.Windows.Forms.Padding]::new(0,0,10,0)
+$searchRow.Controls.Add($lblSearch, 0, 0)
 
 $txtSearch = New-Object System.Windows.Forms.TextBox
-$txtSearch.Location = New-Object System.Drawing.Point(55,36)
-$txtSearch.Size = New-Object System.Drawing.Size(360,25)
-$txtSearch.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
-$topPanel.Controls.Add($txtSearch)
+$txtSearch.Dock = [System.Windows.Forms.DockStyle]::Fill
+$txtSearch.Margin = [System.Windows.Forms.Padding]::new(0,2,10,0)
+$searchRow.Controls.Add($txtSearch, 1, 0)
 
 $btnFieldPicker = New-Object System.Windows.Forms.Button
-$btnFieldPicker.Text = "Search Fields ▼"
-$btnFieldPicker.Size = New-Object System.Drawing.Size(140,27)
-$btnFieldPicker.Location = New-Object System.Drawing.Point(430,35)
-$btnFieldPicker.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
-$topPanel.Controls.Add($btnFieldPicker)
+$btnFieldPicker.Text = "Fields ▼"
+$btnFieldPicker.Dock = [System.Windows.Forms.DockStyle]::Fill
+$btnFieldPicker.Margin = [System.Windows.Forms.Padding]::new(0,0,10,0)
+$searchRow.Controls.Add($btnFieldPicker, 2, 0)
 
 $btnClearFilter = New-Object System.Windows.Forms.Button
-$btnClearFilter.Text = "Clear Filter"
-$btnClearFilter.Size = New-Object System.Drawing.Size(95,27)
-$btnClearFilter.Location = New-Object System.Drawing.Point(580,35)
-$btnClearFilter.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
-$topPanel.Controls.Add($btnClearFilter)
+$btnClearFilter.Text = "Clear"
+$btnClearFilter.Dock = [System.Windows.Forms.DockStyle]::Fill
+$btnClearFilter.Margin = [System.Windows.Forms.Padding]::new(0,0,10,0)
+$searchRow.Controls.Add($btnClearFilter, 3, 0)
 
 $chkExportFiltered = New-Object System.Windows.Forms.CheckBox
 $chkExportFiltered.Text = "Export filtered rows only"
 $chkExportFiltered.AutoSize = $true
-$chkExportFiltered.Location = New-Object System.Drawing.Point(690,39)
-$chkExportFiltered.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left
+$chkExportFiltered.Dock = [System.Windows.Forms.DockStyle]::Fill
+$chkExportFiltered.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
+$chkExportFiltered.Margin = [System.Windows.Forms.Padding]::new(0,4,0,0)
 $chkExportFiltered.Enabled = $false
-$topPanel.Controls.Add($chkExportFiltered)
+$searchRow.Controls.Add($chkExportFiltered, 4, 0)
 
 # ---------------- FILTER POPUP PANEL ----------------
 $filterPanel = New-Object System.Windows.Forms.Panel
@@ -195,40 +235,6 @@ $script:highlightColumns = @()
 $script:suspendFilterEvents = $false
 
 # ---------------- HELPERS ----------------
-function Update-TopPanelLayout {
-    $padding = 0
-    $gap = 10
-
-    $browseWidth = $btnBrowse.Width
-    $rightEdgeRow1 = $topPanel.ClientSize.Width - $padding
-    $btnBrowse.Location = New-Object System.Drawing.Point(($rightEdgeRow1 - $browseWidth), 0)
-
-    $inputWidth = [Math]::Max(250, $btnBrowse.Left - $gap - $padding)
-    $inputBox.Location = New-Object System.Drawing.Point($padding, 0)
-    $inputBox.Size = New-Object System.Drawing.Size($inputWidth, 25)
-
-    $labelX = 0
-    $searchTop = 36
-    $lblSearch.Location = New-Object System.Drawing.Point($labelX, 40)
-
-    $searchX = 55
-    $fieldPickerWidth = $btnFieldPicker.Width
-    $clearWidth = $btnClearFilter.Width
-    $checkboxWidth = $chkExportFiltered.PreferredSize.Width
-
-    $checkboxX = $topPanel.ClientSize.Width - $checkboxWidth
-    $clearX = $checkboxX - $gap - $clearWidth
-    $fieldPickerX = $clearX - $gap - $fieldPickerWidth
-    $searchWidth = [Math]::Max(160, $fieldPickerX - $gap - $searchX)
-
-    $txtSearch.Location = New-Object System.Drawing.Point($searchX, $searchTop)
-    $txtSearch.Size = New-Object System.Drawing.Size($searchWidth, 25)
-
-    $btnFieldPicker.Location = New-Object System.Drawing.Point($fieldPickerX, 35)
-    $btnClearFilter.Location = New-Object System.Drawing.Point($clearX, 35)
-    $chkExportFiltered.Location = New-Object System.Drawing.Point($checkboxX, 39)
-}
-Update-TopPanelLayout
 
 function Set-Status {
     param(
@@ -462,9 +468,6 @@ function Update-FilterPanelPosition {
     $filterPanel.Location = New-Object System.Drawing.Point($x, $y)
     $filterPanel.BringToFront()
 }
-
-
-
 
 function Reset-FilterUiState {
     $script:searchDelayTimer.Stop()
@@ -805,14 +808,12 @@ $txtSearch.Add_TextChanged({
 })
 
 $form.Add_Resize({
-    Update-TopPanelLayout
     if ($filterPanel.Visible) {
         Update-FilterPanelPosition
     }
 })
 
 $topPanel.Add_Resize({
-    Update-TopPanelLayout
     if ($filterPanel.Visible) {
         Update-FilterPanelPosition
     }
