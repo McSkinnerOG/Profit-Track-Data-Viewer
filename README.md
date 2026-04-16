@@ -1,6 +1,6 @@
 # 📊 Profit-Track Data Viewer
 
-A high-performance PowerShell-based tool for parsing, viewing, and exporting large Profit-Track data files without lag or freezing.
+A high-performance PowerShell-based tool for parsing, viewing, and exporting large Profit-Track data files.
 
 Designed specifically to handle **very large files (19,000+ lines)** efficiently while providing a simple GUI for viewing and exporting data.
 
@@ -16,7 +16,7 @@ Designed specifically to handle **very large files (19,000+ lines)** efficiently
 - 💾 Export parsed data to:
   - CSV
   - TXT
-- 🧠 Memory-efficient streaming (no full file load required)
+- 🧠 Memory-efficient streaming
 
 ---
 
